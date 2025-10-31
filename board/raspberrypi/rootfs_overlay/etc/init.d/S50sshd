@@ -1,0 +1,24 @@
+#!/bin/sh
+
+
+case "$1" in
+    start)
+        echo "Starting sshd..."
+        if [ ! -f /etc/ssh/ssh_host_rsa_key ]; then
+            echo "Generating SSH keys..."
+            /usr/bin/ssh-keygen -A
+        fi
+        /usr/sbin/sshd & touch /var/lock/sshd
+        ;;
+    stop)
+        echo "Stopping sshd..."
+        /usr/bin/pkill sshd
+        rm -f /var/lock/sshd
+        ;;
+    *)
+        echo "Usage: $0 {start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0
