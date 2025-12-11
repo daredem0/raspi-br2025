@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# Load HiFiBerry DAC+ADC Pro audio driver
+#
+
+case "$1" in
+  start)
+	printf "Loading HiFiBerry DAC+ADC Pro driver: "
+	# Load codec drivers first
+	modprobe snd-soc-pcm512x-i2c 2>/dev/null
+	modprobe snd-soc-pcm186x-i2c 2>/dev/null
+	modprobe clk-hifiberry-dacpro 2>/dev/null
+	# Load the machine driver
+	modprobe snd-soc-hifiberry-dacplusadcpro
+	if [ $? -eq 0 ]; then
+		echo "OK"
+	else
+		echo "FAIL"
+	fi
+	;;
+  stop)
+	printf "Unloading HiFiBerry DAC+ADC Pro driver: "
+	modprobe -r snd-soc-hifiberry-dacplusadcpro 2>/dev/null
+	echo "OK"
+	;;
+  restart|reload)
+	"$0" stop
+	"$0" start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
